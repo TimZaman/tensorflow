@@ -30,13 +30,15 @@ SqliteQueryConnection::~SqliteQueryConnection() {
 
 Status SqliteQueryConnection::Open(const string& data_source_name,
                                    const string& query,
+                                   const string& init_statement,
                                    const DataTypeVector& output_types) {
   if (db_ != nullptr) {
     return errors::FailedPrecondition(
         "Failed to open query connection: Connection already opened.");
   }
   TF_RETURN_IF_ERROR(Sqlite::Open(
-      data_source_name, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, &db_));
+      data_source_name, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, &db_, init_statement));
+  init_statement_ = init_statement;
   query_ = query;
   output_types_ = output_types;
   return Status::OK();

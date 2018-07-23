@@ -30,6 +30,7 @@ class SqliteQueryConnection : public QueryConnection {
   SqliteQueryConnection();
   ~SqliteQueryConnection() override;
   Status Open(const string& data_source_name, const string& query,
+              const string& init_statement,
               const DataTypeVector& output_types) override;
   Status Close() override;
   Status GetNext(IteratorContext* ctx, std::vector<Tensor>* out_tensors,
@@ -46,6 +47,7 @@ class SqliteQueryConnection : public QueryConnection {
   SqliteStatement stmt_;
   int column_count_ = 0;
   string query_;
+  string init_statement_;
   DataTypeVector output_types_;
 };
 

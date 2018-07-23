@@ -77,7 +77,7 @@ class LOCKABLE Sqlite : public core::RefCounted {
   ///
   /// This function sets PRAGMA values from TF_SQLITE_* environment
   /// variables. See sqlite.cc to learn more.
-  static Status Open(const string& path, int flags, Sqlite** db);
+  static Status Open(const string& path, int flags, Sqlite** db, const string& init_statement=nullptr);
 
   /// \brief Creates SQLite statement.
   ///
@@ -138,7 +138,7 @@ class LOCKABLE Sqlite : public core::RefCounted {
 /// access from first Bind*() to *Reset().
 ///
 /// When reusing a statement in a loop, be certain to not have jumps
-/// betwixt Bind*() and *Reset().
+/// between Bind*() and *Reset().
 class SqliteStatement {
  public:
   /// \brief Initializes an empty statement to be assigned later.

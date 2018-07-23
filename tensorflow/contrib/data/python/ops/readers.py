@@ -908,7 +908,7 @@ def _get_file_names(file_pattern, shuffle):
 class SqlDataset(dataset_ops.Dataset):
   """A `Dataset` consisting of the results from a SQL query."""
 
-  def __init__(self, driver_name, data_source_name, query, output_types):
+  def __init__(self, driver_name, data_source_name, query, output_types, init_statement=""):
     """Creates a `SqlDataset`.
 
     `SqlDataset` allows a user to read data from the result set of a SQL query.
@@ -944,11 +944,13 @@ class SqlDataset(dataset_ops.Dataset):
         data_source_name, dtype=dtypes.string, name="data_source_name")
     self._query = ops.convert_to_tensor(
         query, dtype=dtypes.string, name="query")
+    self._init_statement = init_statement
     self._output_types = output_types
 
   def _as_variant_tensor(self):
     return gen_dataset_ops.sql_dataset(self._driver_name,
                                        self._data_source_name, self._query,
+                                       self._init_statement,
                                        nest.flatten(self.output_types),
                                        nest.flatten(self.output_shapes))
 

@@ -32,9 +32,9 @@ from tensorflow.python.platform import test
 class SqlDatasetTestBase(test.TestCase):
   """Base class for setting up and testing SqlDataset."""
 
-  def _createSqlDataset(self, output_types, num_repeats=1):
+  def _createSqlDataset(self, output_types, num_repeats=1, init_statement=""):
     dataset = readers.SqlDataset(self.driver_name, self.data_source_name,
-                                 self.query, output_types).repeat(num_repeats)
+                                 self.query, output_types, init_statement).repeat(num_repeats)
     iterator = dataset.make_initializable_iterator()
     init_op = iterator.initializer
     get_next = iterator.get_next()

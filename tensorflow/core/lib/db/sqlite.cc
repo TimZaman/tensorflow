@@ -110,7 +110,7 @@ Status EnvPragma(Sqlite* db, const char* pragma, const char* var) {
 }  // namespace
 
 /* static */
-Status Sqlite::Open(const string& path, int flags, Sqlite** db) {
+Status Sqlite::Open(const string& path, int flags, Sqlite** db, const string& init_statement) {
   flags |= SQLITE_OPEN_PRIVATECACHE;
   flags |= SQLITE_OPEN_URI;
   sqlite3* sqlite = nullptr;
@@ -150,6 +150,12 @@ Status Sqlite::Open(const string& path, int flags, Sqlite** db) {
     (*db)->Unref();
     *db = nullptr;
   }
+
+  rc = sqlite3_exec(sqlite, init_statement.c_str(), NULL, NULL, NULL);
+  if( rc != SQLITE_OK ) {
+    LOG(FATAL) << "BEGIN failed: " << sqlite3_errmsg(sqlite);
+  }
+
   return s;
 }
 

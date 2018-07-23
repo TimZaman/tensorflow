@@ -46,6 +46,7 @@ class QueryConnection {
   // if `Open()` fails. `Close()` must be called before making another call
   // to `Open()`.
   virtual Status Open(const string& data_source_name, const string& query,
+                      const string& init_statement,
                       const DataTypeVector& output_types) = 0;
   // Closes an opened connection.
   virtual Status Close() = 0;

@@ -585,6 +585,25 @@ class SqlDatasetTest(sql_dataset_op_test_base.SqlDatasetTestBase):
       with self.assertRaises(errors.OutOfRangeError):
         sess.run(get_next)
 
+  def testMyAss(self):
+    init_statement = "INSERT INTO townspeople (first_name, last_name) VALUES ('Ha', 'Bo')"
+    init_op, get_next = self._createSqlDataset(
+        output_types=(dtypes.string, dtypes.string, dtypes.float64), 
+        init_statement=init_statement,
+        )
+    with self.test_session() as sess:
+      sess.run(
+        init_op,
+        feed_dict={
+          self.query:
+            "SELECT first_name, last_name, triumphs FROM townspeople "
+            "ORDER BY first_name"
+        })
+      while True:
+        out = sess.run(get_next)
+        print('XXX')
+        print(out)
+    exit(-1)
 
 if __name__ == "__main__":
   test.main()

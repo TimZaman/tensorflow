@@ -34,6 +34,7 @@ class SqlDatasetOp : public DatasetOpKernel {
   explicit SqlDatasetOp(OpKernelConstruction* ctx) : DatasetOpKernel(ctx) {
     OP_REQUIRES_OK(ctx, ctx->GetAttr("output_types", &output_types_));
     OP_REQUIRES_OK(ctx, ctx->GetAttr("output_shapes", &output_shapes_));
+    OP_REQUIRES_OK(ctx, ctx->GetAttr("init_statement", &init_statement_));
     for (const DataType& dt : output_types_) {
       OP_REQUIRES(ctx,
                   dt == DT_STRING || dt == DT_INT8 || dt == DT_INT16 ||
@@ -71,6 +72,7 @@ class SqlDatasetOp : public DatasetOpKernel {
                     driver_name.c_str())));
 
     *output = new Dataset(ctx, driver_name, data_source_name, query,
+                          init_statement_,
                           output_types_, output_shapes_);
   }
 
@@ -79,12 +81,14 @@ class SqlDatasetOp : public DatasetOpKernel {
    public:
     Dataset(OpKernelContext* ctx, const string& driver_name,
             const string& data_source_name, const string& query,
+            const string& init_statement,
             const DataTypeVector& output_types,
             const std::vector<PartialTensorShape>& output_shapes)
         : GraphDatasetBase(ctx),
           driver_name_(driver_name),
           data_source_name_(data_source_name),
           query_(query),
+          init_statement_(init_statement),
           output_types_(output_types),
           output_shapes_(output_shapes) {}
 
@@ -182,6 +186,7 @@ class SqlDatasetOp : public DatasetOpKernel {
             sql::DriverManager::CreateQueryConnection(dataset()->driver_name_);
         Status s = query_connection_->Open(dataset()->data_source_name_,
                                            dataset()->query_,
+                                           dataset()->init_statement_,
                                            dataset()->output_types_);
         next_calls_ = 0;
         if (!s.ok()) {
@@ -200,9 +205,11 @@ class SqlDatasetOp : public DatasetOpKernel {
     const string driver_name_;
     const string data_source_name_;
     const string query_;
+    const string init_statement_;
     const DataTypeVector output_types_;
     const std::vector<PartialTensorShape> output_shapes_;
   };
+  string init_statement_;
   DataTypeVector output_types_;
   std::vector<PartialTensorShape> output_shapes_;
 };

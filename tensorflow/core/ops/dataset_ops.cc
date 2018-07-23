@@ -584,6 +584,7 @@ REGISTER_OP("SqlDataset")
     .Input("data_source_name: string")
     .Input("query: string")
     .Output("handle: variant")
+    .Attr("init_statement: string")
     .Attr("output_types: list(type) >= 1")
     .Attr("output_shapes: list(shape) >= 1")
     .SetIsStateful()  // TODO(b/65524810): Source dataset ops must be marked
